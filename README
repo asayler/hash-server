@@ -1,0 +1,7 @@
+A simple hashing microservice
+By Andy Sayler
+
+With help from:
+
+https://golang.org/pkg/net/http/
+http://thenewstack.io/make-a-restful-json-api-go/

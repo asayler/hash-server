@@ -4,8 +4,8 @@ Hash Server
 **_A simple hashing microservice_**
 
 Hashes (and optionally salts) passwords using one or more rounds of
-SHA512. Inserts an arbitrary delay into the hashing path to ease
-concurrency analysis.
+SHA512. Inserts an arbitrary 5-second delay into the hashing path to
+ease concurrency analysis.
 
 ### Authorship ###
 
@@ -24,7 +24,7 @@ $ go get https://github.com/braintree/manners
 
 ### Run ###
 
-_By default, the server runs on port 8080 and uses a 5 second delay_
+_By default, the server runs on port 8080_
 
 ```
 $ go run serv.go [port]
@@ -65,7 +65,7 @@ $ curl -X POST --data "shutdown=" http://[host]:[port]
 Shutting down
 ```
 
-**Input can also be passed a multipart from data**
+**Input can also be passed as multipart form data**
 ```
 $ curl -X POST -F "password=Testing" -F "salt=" http://localhost:8080
 gnHMrKpNhBkbsrCmqGPkpz7VTLYeKrmENHP8Ql/5sYo=|J1/HjFoZvfLPbGyGjEHepjA+zp7yP8GgUmsc8i9ZbfAA9G7gn8jUSRXiD5vq34XcZCRRqaLNO6hOc0kxFzcczw==

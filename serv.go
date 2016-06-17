@@ -125,13 +125,16 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	// Parse CLI
-	var port int
+	// Parse Args
+
 	if len(os.Args) > 2 {
 		fmt.Printf("Too many args\n")
-		fmt.Printf("Usage :\n%s [port]", os.Args[0])
+		fmt.Printf("Usage :\n%s [port]\n", os.Args[0])
+		os.Exit(1)
 	}
-	if len(os.Args) == 2 {
+
+	var port int
+	if len(os.Args) > 1 {
 		val, err := strconv.Atoi(os.Args[1])
 		if err != nil {
 			fmt.Printf("Error parsing port")
@@ -143,6 +146,7 @@ func main() {
 		port = DEFAULT_PORT
 	}
 
+	// Launch Server
 	h := HashHandler{}
 	log.Printf("Starting server on port %d\n", port)
 	path := ":" + strconv.Itoa(port)

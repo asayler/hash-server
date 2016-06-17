@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/sha512"
 	"encoding/base64"
 	"fmt"
@@ -13,6 +14,8 @@ import (
 
 const (
 	SLEEP       = 5  //seconds
+	SALT_LENGTH = 32 //bytes
+	SALT_SEP    = "|"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -37,6 +40,24 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Extract Salt
+	salt := r.FormValue("salt")
+	_, salt_ok := r.Form["salt"]
+	salt_bytes := []byte(salt)
+	if salt_ok {
+		if len(salt_bytes) == 0 {
+			salt_bytes = make([]byte, SALT_LENGTH)
+			_, salt_err := rand.Read(salt_bytes)
+			if salt_err != nil {
+				log.Printf("Error generating salt")
+				http.Error(w, "Error generating salt", http.StatusInternalServerError)
+				return
+			}
+			salt = base64.StdEncoding.EncodeToString(salt_bytes[:])
+		}
+		log.Printf("Salt: %s\n", salt)
+	}
+
 	// Extract Password
 	password := r.FormValue("password")
 	length := len(password)
@@ -57,13 +78,24 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(SLEEP * time.Second)
 
 	// Hash Password
-	hash_bytes := sha512.Sum512(password_bytes)
+	var tohash []byte
+	if len(salt_bytes) > 0 {
+		tohash = append(salt_bytes, password_bytes...)
+	} else {
+		tohash = password_bytes
+	}
+	hash_bytes := sha512.Sum512(tohash)
 	hash := base64.StdEncoding.EncodeToString(hash_bytes[:])
 	log.Printf("Hash: %s\n", hash)
 
 	// Reply
-	log.Printf("Responding")
-	fmt.Fprintf(w, "%s\n", hash)
+	res := ""
+	if len(salt_bytes) > 0 {
+		res += salt + SALT_SEP
+	}
+	res += hash
+	log.Printf("Responding: %s", res)
+	fmt.Fprintf(w, "%s\n", res)
 
 }
 

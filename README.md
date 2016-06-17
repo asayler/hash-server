@@ -65,19 +65,19 @@ $ curl -X POST --data "password=Testing" http://[host]:[port]
 ZPAml8zRwK50HZ4ib5VxJ9p6YU1qGPVfnycm0gJ/qsHpXmGdrFQX60iY/WqfuK65zdAF6RPIDldFTK5Lb8bl1g==
 ```
 
-**Hash password w/ Random 32-byte Salt**
+**Hash password w/ a random 32-byte salt**
 ```
 $ curl -X POST --data "password=Testing&salt=" http://[host]:[port]
 bdYeFlCj27OB+0LL20v4JtQTvM4gYC98cLdNq8qntpo=|fMq58SFQbvmleJtXXDlJtFKIHvCsP6qbHexi/FKlpRrqQ0AfjJfURM7X0LNnyqb0frfRS2eKhN8OmzkSBYSd3Q==
 ```
 
-**Hash password w/ User-Specified Salt**
+**Hash password w/ a user-specified salt**
 ```
 $ curl -X POST --data "password=Testing&salt=abcdefg" http://[host]:[port]
 abcdefg|pBgplaz997cuKFfDHSfNLnvi4vjpspFVGGcj7/vIMUsquVFi+F/RAuzUQ5p235ZsW8Iiv49AeBiaHN/E+B1wsQ==
 ```
 
-**Hash password w/ Multiple Rounds of SHA512**
+**Hash password w/ multiple rounds of SHA512**
 ```
 $ curl -X POST --data "password=Testing&rounds=100" http://[host]:[port]
 zs069hQAtAo3XavUSwhstTbN6T2AM8LGDrw5nzJn/9m+mlKXlKWYPgPyvE9Sv+M14l6ieXoq/lSP8InbKPfS8w==

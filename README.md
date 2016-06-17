@@ -11,6 +11,30 @@ ease concurrency analysis.
 
 By [Andy Sayler](https://www.andysayler.com)
 
+### Caveats ###
+
+This server accepts unencrypted and unauthenticated `http` requests by
+default, which is wholly inappropriate for a system receiving
+plaintext password requests. This should be updated to run over TLS
+(i.e. `https`) prior to passing any real password data through the
+system. At the very least, it should be proxied via an `https` server
+prior to exposing to a public network.
+
+Furthermore, sha512 isn't a great choice for a password hash due to
+how quickly the algorithm is designed to run. This issue can be
+mitigated by using multiple rounds of SHA512, but a better solution
+would be to use a hashing algorithm with a variable work load such as
+[bcrypt](https://en.wikipedia.org/wiki/Bcrypt).
+
+This system also currently leaks the length, first, and last letter of
+each password to the log in the form of `a****z` for each password it
+hashes. It's up to the user whether or not the debugging benefit this
+leakage provides outweighs the security risk of logging such data.
+
+Finally, although the system makes salting optional, in a real
+deployment, salting should be mandatory to subvert rainbow-table
+attacks on the resulting password hashes.
+
 ### Dependencies ###
 
 + https://github.com/braintree/manners
@@ -47,7 +71,7 @@ $ curl -X POST --data "password=Testing&salt=" http://[host]:[port]
 bdYeFlCj27OB+0LL20v4JtQTvM4gYC98cLdNq8qntpo=|fMq58SFQbvmleJtXXDlJtFKIHvCsP6qbHexi/FKlpRrqQ0AfjJfURM7X0LNnyqb0frfRS2eKhN8OmzkSBYSd3Q==
 ```
 
-**Hash password w/ User Specified Salt**
+**Hash password w/ User-Specified Salt**
 ```
 $ curl -X POST --data "password=Testing&salt=abcdefg" http://[host]:[port]
 abcdefg|pBgplaz997cuKFfDHSfNLnvi4vjpspFVGGcj7/vIMUsquVFi+F/RAuzUQ5p235ZsW8Iiv49AeBiaHN/E+B1wsQ==

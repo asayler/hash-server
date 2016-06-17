@@ -8,6 +8,7 @@ import (
 	"github.com/braintree/manners"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -73,6 +74,22 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Password: %s\n", redacted)
 	password_bytes := []byte(password)
 
+	// Extract Rounds
+	rounds_str := r.FormValue("rounds")
+	var rounds int
+	if len(rounds_str) > 0 {
+		val, conv_err := strconv.Atoi(rounds_str)
+		if conv_err != nil {
+			log.Printf("Error parsing rounds")
+			http.Error(w, "Error parsing rounds", http.StatusBadRequest)
+			return
+		} else {
+			rounds = val
+		}
+	} else {
+		rounds = 1
+	}
+
 	// Sleep
 	log.Printf("Sleeping for %d seconds", SLEEP)
 	time.Sleep(SLEEP * time.Second)
@@ -84,7 +101,12 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tohash = password_bytes
 	}
-	hash_bytes := sha512.Sum512(tohash)
+	log.Printf("Hashing %d rounds\n", rounds)
+	var hash_bytes [64]byte
+	for i := 0; i < rounds; i++ {
+		hash_bytes = sha512.Sum512(tohash)
+		tohash = hash_bytes[:]
+	}
 	hash := base64.StdEncoding.EncodeToString(hash_bytes[:])
 	log.Printf("Hash: %s\n", hash)
 

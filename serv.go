@@ -8,15 +8,17 @@ import (
 	"github.com/braintree/manners"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	SLEEP       = 5  //seconds
-	SALT_LENGTH = 32 //bytes
-	SALT_SEP    = "|"
+	DEFAULT_PORT = 8080
+	SLEEP        = 5  //seconds
+	SALT_LENGTH  = 32 //bytes
+	SALT_SEP     = "|"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +125,28 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	// Parse CLI
+	var port int
+	if len(os.Args) > 2 {
+		fmt.Printf("Too many args\n")
+		fmt.Printf("Usage :\n%s [port]", os.Args[0])
+	}
+	if len(os.Args) == 2 {
+		val, err := strconv.Atoi(os.Args[1])
+		if err != nil {
+			fmt.Printf("Error parsing port")
+			os.Exit(1)
+		} else {
+			port = val
+		}
+	} else {
+		port = DEFAULT_PORT
+	}
+
 	h := HashHandler{}
-	manners.ListenAndServe(":8080", h)
+	log.Printf("Starting server on port %d\n", port)
+	path := ":" + strconv.Itoa(port)
+	manners.ListenAndServe(path, h)
+	os.Exit(0)
 
 }

@@ -4,6 +4,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"fmt"
+	"github.com/braintree/manners"
 	"log"
 	"net/http"
 	"strings"
@@ -14,15 +15,26 @@ const (
 	SLEEP = 5 * time.Second
 )
 
-func hashRequest(w http.ResponseWriter, r *http.Request) {
+func hello(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello\n"))
+}
+
+type HashHandler struct{}
+
+func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Request Info
 	log.Printf("Method: %s\n", r.Method)
 	log.Printf("Header: %s\n", r.Header)
 
-	// Sleep
-	log.Printf("Sleeping for %d seconds", SLEEP/time.Second)
-	time.Sleep(SLEEP)
+	// Check for shutdown
+	shutdown := strings.ToLower(r.FormValue("shutdown"))
+	if (shutdown == "true") || (shutdown == "t") {
+		log.Printf("Received shutdown request")
+		manners.Close()
+		fmt.Fprintf(w, "Shutting down\n")
+		return
+	}
 
 	// Extract Password
 	password := r.FormValue("password")
@@ -39,6 +51,10 @@ func hashRequest(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Password: %s\n", redacted)
 	password_bytes := []byte(password)
 
+	// Sleep
+	log.Printf("Sleeping for %d seconds", SLEEP/time.Second)
+	time.Sleep(SLEEP)
+
 	// Hash Password
 	hash_bytes := sha512.Sum512(password_bytes)
 	hash := base64.StdEncoding.EncodeToString(hash_bytes[:])
@@ -52,7 +68,7 @@ func hashRequest(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	http.HandleFunc("/", hashRequest)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	h := HashHandler{}
+	manners.ListenAndServe(":8080", h)
 
 }

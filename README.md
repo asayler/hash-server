@@ -43,7 +43,7 @@ attacks on the resulting password hashes.
 
 ```
 $ git clone https://github.com/asayler/hash-server.git
-$ go get https://github.com/braintree/manners
+$ go get github.com/braintree/manners
 ```
 
 ### Run ###

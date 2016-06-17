@@ -28,8 +28,9 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Header: %s\n", r.Header)
 
 	// Check for shutdown
-	shutdown := strings.ToLower(r.FormValue("shutdown"))
-	if (shutdown == "true") || (shutdown == "t") {
+	r.FormValue("shutdown")
+	_, shutdown := r.Form["shutdown"]
+	if shutdown {
 		log.Printf("Received shutdown request")
 		manners.Close()
 		fmt.Fprintf(w, "Shutting down\n")

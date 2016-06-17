@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	SLEEP = 5 * time.Second
+	SLEEP       = 5  //seconds
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -52,8 +52,8 @@ func (h HashHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	password_bytes := []byte(password)
 
 	// Sleep
-	log.Printf("Sleeping for %d seconds", SLEEP/time.Second)
-	time.Sleep(SLEEP)
+	log.Printf("Sleeping for %d seconds", SLEEP)
+	time.Sleep(SLEEP * time.Second)
 
 	// Hash Password
 	hash_bytes := sha512.Sum512(password_bytes)

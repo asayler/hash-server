@@ -1,7 +1,7 @@
 Hash Server
 -----------
 
-**__A simple hashing microservice__**
+**_A simple hashing microservice_**
 
 Hashes (and optionally salts) passwords using one or more rounds of
 SHA512.
@@ -31,8 +31,8 @@ $ go run serv.go [port]
 
 ### Client Request Examples ###
 
-__Data is returned base64 encoded. When Salts are used, salt is
-returned first and separated from data in return via `|`.__
+_Data is returned base64 encoded. When Salts are used, salt is
+returned first and separated from data in return via `|`._
 
 **Hash password using SHA512**
 ```
@@ -58,4 +58,3 @@ $ curl --data "password=Testing&rounds=100" http://[host]:[port]
 ```
 $ curl --data "shutdown=" http://[host]:[port]
 ```
-
